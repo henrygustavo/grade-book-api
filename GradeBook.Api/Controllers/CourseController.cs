@@ -9,6 +9,7 @@
 
     [Produces("application/json")]
     [Route("api/courses")]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "AdministratorTeacher")]
     public class CourseController : Controller
     {
 
@@ -21,14 +22,13 @@
 
         [HttpGet("all")]
         [ProducesResponseType(typeof(List<Application.Dto.Output.CourseDto>), 200)]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme,  Policy = "AdministratorTeacher")]
+     
         public IActionResult GetAll()
         {
             return Ok(_courseApplicationService.GetAll());
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         [ProducesResponseType(typeof(Application.Dto.Output.PaginationDto), 200)]
         public IActionResult GetAll(int page = 1, int pageSize = 10, string sortBy = "id", string sortDirection = "asc")
         {
@@ -37,7 +37,6 @@
 
 
         [HttpGet("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         [ProducesResponseType(typeof(Application.Dto.Output.CourseDto), 200)]
         public IActionResult Get(int id)
         {
@@ -45,7 +44,6 @@
         }
 
         [HttpPost]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult Post([FromBody]CourseDto course)
         {
@@ -54,7 +52,6 @@
         }
 
         [HttpPut("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult Put(int id, [FromBody]CourseDto course)
         {
@@ -63,7 +60,6 @@
         }
 
         [HttpDelete("{id}")]
-        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Administrator")]
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult Delete(int id)
         {

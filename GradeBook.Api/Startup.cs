@@ -109,13 +109,12 @@
                 };
             });
 
-            var allowSpecificOriginUrl = Environment.GetEnvironmentVariable("ALLOW_SPECIFIC_ORIGIN_URL") ?? Configuration["AllowSpecificOriginUrl"];
             services.AddCors(options =>
             {
-                options.AddPolicy("AllowSpecificOrigin",
+                options.AddPolicy("AllowFromAll",
                     builder => builder
-                        .WithOrigins(allowSpecificOriginUrl)
                         .AllowAnyMethod()
+                        .AllowAnyOrigin()
                         .AllowCredentials()
                         .AllowAnyHeader());
             });
@@ -135,9 +134,6 @@
                     new ProducesResponseTypeAttribute(typeof(ErrorResponse), 415));
                 options.Filters.Add(
                     new ProducesResponseTypeAttribute(typeof(ErrorResponse), 500));
-
-                
-                    options.Filters.Add(new CorsAuthorizationFilterFactory("AllowSpecificOrigin"));
                 
             });
 
@@ -172,7 +168,7 @@
             options.DefaultFileNames.Clear();
             options.DefaultFileNames.Add("index.html");
 
-             app.UseCors("AllowSpecificOrigin")//always berofe "UseMvc"
+             app.UseCors("AllowFromAll")//always berofe "UseMvc"
                 .UseMiddleware(typeof(ErrorMiddleware))
                 .UseMvc()
                 .UseDefaultFiles(options)

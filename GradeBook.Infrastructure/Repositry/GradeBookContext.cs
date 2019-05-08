@@ -16,8 +16,17 @@
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>()
-              .ToTable("user");
+          
+            modelBuilder.Entity<User>(b =>
+            {
+                // Each User can have many entries in the UserRole join table
+                b.HasMany(e => e.Roles)
+                    .WithOne()
+                    .HasForeignKey(ur => ur.UserId)
+                    .IsRequired();
+
+                b.ToTable("user");
+            });
 
             modelBuilder.Entity<Role>()
                 .ToTable("role");
