@@ -20,7 +20,7 @@
             modelBuilder.Entity<User>(b =>
             {
                 // Each User can have many entries in the UserRole join table
-                b.HasMany(e => e.Roles)
+                b.HasMany(e => e.UserRoles)
                     .WithOne()
                     .HasForeignKey(ur => ur.UserId)
                     .IsRequired();

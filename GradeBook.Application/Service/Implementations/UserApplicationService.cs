@@ -30,7 +30,15 @@
 
         public Dto.Output.UserDto Get(int id)
         {
-            return Mapper.Map<Dto.Output.UserDto>(_unitOfWork.Users.Get(id));
+            var roles = _unitOfWork.Roles.GetAll();
+
+            var entity = _unitOfWork.Users.Get(id);
+            var entityDto = Mapper.Map<Dto.Output.UserDto>(entity);
+
+            entityDto.RoleId = entity.UserRoles.FirstOrDefault().RoleId;
+            entityDto.RoleName = roles.FirstOrDefault(p => p.Id == entityDto.RoleId).Name;
+
+            return entityDto;
         }
 
         public List<Dto.Output.UserDto> GetAll()
@@ -40,11 +48,21 @@
 
         public Dto.Output.PaginationDto GetAll(int page, int pageSize, string sortBy, string sortDirection)
         {
-            var entities = _unitOfWork.Users.GetAll(page, pageSize, sortBy, sortDirection).ToList();
+            var entities = _unitOfWork.Users.GetAllWithRoles(page, pageSize, sortBy, sortDirection).ToList();
+
+            var entitiesDto = Mapper.Map<List<Dto.Output.UserDto>>(entities);
+
+            var roles = _unitOfWork.Roles.GetAll();
+
+            foreach(var entityDto in entitiesDto)
+            {
+                entityDto.RoleId = entities.FirstOrDefault(p=>p.Id == entityDto.Id).UserRoles.FirstOrDefault().RoleId;
+                entityDto.RoleName = roles.FirstOrDefault(p => p.Id == entityDto.RoleId).Name;
+            }
 
             var pagedRecord = new Dto.Output.PaginationDto
             {
-                Content = Mapper.Map<List<Dto.Output.UserDto>>(entities),
+                Content = entitiesDto,
                 TotalRecords = _unitOfWork.Users.CountGetAll(),
                 CurrentPage = page,
                 PageSize = pageSize

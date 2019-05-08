@@ -7,7 +7,7 @@
     {
         public virtual bool Disabled { get; set; }
 
-        public virtual ICollection<IdentityUserRole<int>> Roles { get; } = new List<IdentityUserRole<int>>();
+        public virtual ICollection<IdentityUserRole<int>> UserRoles { get; set; }
 
     }
 }
