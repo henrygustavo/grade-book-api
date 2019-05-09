@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Authentication.JwtBearer;
     using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
+    using System.Threading.Tasks;
 
     [Produces("application/json")]
     [Route("api/users")]
@@ -31,6 +32,14 @@
         public IActionResult Get(int id)
         {
             return Ok(_userApplicationService.Get(id));
+        }
+
+        [HttpPost]
+        [ProducesResponseType(typeof(string), 200)]
+        public async Task<IActionResult> Post([FromBody] UserDto model)
+        {
+            return Ok(await _userApplicationService.PerformRegistration(model));
+ 
         }
 
         [HttpPut("{id}")]

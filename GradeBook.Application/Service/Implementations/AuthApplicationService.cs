@@ -103,9 +103,11 @@
                 return notification;
             }
 
-            if (model.UserName.Length < int.Parse(_config["Account:UserNameRequiredLength"]))
+            if (model.UserName.Length < int.Parse(_config["Account:UserNameRequiredMinLength"]) ||
+                model.UserName.Length > int.Parse(_config["Account:UserNameRequiredMaxLength"])
+                )
             {
-                notification.AddError($"UserName must have at least {_config["Account:UserNameRequiredLength"]} characters.");
+                notification.AddError($"UserName must have between {_config["Account:UserNameRequiredMinLength"]} and {_config["Account:UserNameRequiredMaxLength"]} characters.");
                 return notification;
             }
 

@@ -39,7 +39,7 @@
 
         public async Task SeedAdmin()
         {
-            var userName = "admin";
+            var userName = "adminusr";
             var user = await _userInMgr.FindByNameAsync(userName);
 
             // Add User
@@ -56,7 +56,7 @@
                 user = new User
                 {
                     UserName = userName,
-                    Email = "admin@test.com",
+                    Email = "adminusr@test.com",
                     EmailConfirmed = true,
                     PhoneNumber = "530-685-2496"
                 };
@@ -75,7 +75,7 @@
 
         public async Task SeedTeacher()
         {
-            var userName = "mcaldas";
+            var userName = "mcteacher";
             var user = await _userInMgr.FindByNameAsync(userName);
 
             // Add User
@@ -93,7 +93,7 @@
                 user = new User
                 {
                     UserName = userName,
-                    Email = "mcaldas@test.com",
+                    Email = "mcteacher@test.com",
                     EmailConfirmed = true,
                     PhoneNumber = "530-685-2496"
                 };
@@ -120,7 +120,7 @@
 
         public async Task SeedStudent()
         {
-            var userName = "hfuntes";
+            var userName = "hfuentes";
             var user = await _userInMgr.FindByNameAsync(userName);
 
             // Add User

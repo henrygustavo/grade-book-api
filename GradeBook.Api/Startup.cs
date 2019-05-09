@@ -53,6 +53,8 @@
                 options.SignIn.RequireConfirmedEmail = Convert.ToBoolean(Configuration["Account:RequireConfirmedEmail"]);
                 options.User.RequireUniqueEmail = true;
                 options.Password.RequiredLength = Convert.ToInt32(Configuration["Account:PasswordRequiredLength"]);
+                options.Password.RequireDigit = Convert.ToBoolean(Configuration["Account:RequireDigit"]);
+                options.Password.RequireNonAlphanumeric = Convert.ToBoolean(Configuration["Account:RequireNonAlphanumeric"]);
 
             }).AddEntityFrameworkStores<GradeBookContext>().AddDefaultTokenProviders();
 
