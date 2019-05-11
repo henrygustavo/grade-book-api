@@ -21,7 +21,13 @@
 
         public int Add(Dto.Input.GradeBookDto entity)
         {
-            Notification notification = Validate(entity);
+            var teacher = _unitOfWork.Teachers.GetAll().Where(p => p.UserId == entity.TeacherUserId).SingleOrDefault();
+           
+            var student = _unitOfWork.Students.Get(entity.StudentId);
+
+            var course = _unitOfWork.Courses.Get(entity.CourseId);
+
+            Notification notification = Validate(entity, course, teacher, student);
 
             if (notification.HasErrors())
             {
@@ -29,6 +35,10 @@
             }
 
             var newEntity = Mapper.Map<GradeBook>(entity);
+
+            newEntity.Course = course;
+            newEntity.Teacher = teacher;
+            newEntity.Student = student;
 
             newEntity.FinalScore = CalculateFinalScore(entity);
 
@@ -39,7 +49,7 @@
             return newEntity.Id;
         }
 
-        private Notification Validate(Dto.Input.GradeBookDto entity)
+        private Notification Validate(Dto.Input.GradeBookDto entity, Course course, Teacher teacher, Student student)
         {
             Notification notification = new Notification();
 
@@ -49,43 +59,45 @@
                 return notification;
             }
 
-            if (_unitOfWork.Courses.Get(entity.CourseId) == null)
+            if (course == null)
             {
                 notification.AddError($"Course does not exist");
                 return notification;
             }
 
-            if (_unitOfWork.Users.Get(entity.TeacherId) == null)
+            if (teacher == null)
             {
                 notification.AddError($"Teacher does not exist");
                 return notification;
             }
 
-            if (_unitOfWork.Users.Get(entity.StudentId) == null)
+            if (student == null)
             {
                 notification.AddError($"Course does not exist");
                 return notification;
             }
 
-            if (_unitOfWork.GradeBooks.GetAll().Any(p=>p.Course.Id == entity.CourseId && p.Student.Id  == entity.StudentId))
+            if (_unitOfWork.GradeBooks.GetAll().Any(p=>p.Course.Id == entity.CourseId &&
+                p.Student.Id  == entity.StudentId &&  entity.CourseId != 0
+                ))
             {
                 notification.AddError($"The Student already has a Score on this course");
                 return notification;
             }
 
-            if (entity.AverageWorkScore >= 0 && entity.AverageWorkScore<= 20)
+            if (!(entity.AverageWorkScore >= 0 && entity.AverageWorkScore<= 20))
             {
                 notification.AddError("Average Work Score must be between 0-20");
                 return notification;
             }
 
-            if (entity.PartialWorkScore >= 0 && entity.PartialWorkScore <= 20)
+            if (!(entity.PartialWorkScore >= 0 && entity.PartialWorkScore <= 20))
             {
                 notification.AddError("Partial Work Score must be between 0-20");
                 return notification;
             }
 
-            if (entity.FinalWorkScore >= 0 && entity.FinalWorkScore <= 20)
+            if (!(entity.FinalWorkScore >= 0 && entity.FinalWorkScore <= 20))
             {
                 notification.AddError("Final Work Score must be must be between 0-20");
                 return notification;
@@ -95,8 +107,8 @@
         }
 
         public Dto.Output.GradeBookDto Get(int id)
-        {
-            return Mapper.Map<Dto.Output.GradeBookDto>(_unitOfWork.GradeBooks.Get(id));
+        { 
+            return Mapper.Map<Dto.Output.GradeBookDto>(_unitOfWork.GradeBooks.GetComplete(id));
         }
 
         public Dto.Output.PaginationDto GetAll(int page, int pageSize, string sortBy, string sortDirection)
@@ -154,12 +166,22 @@
             entity.Id = id;
             var oldEntity = _unitOfWork.GradeBooks.Get(id);
 
-            Notification notification = Validate(entity);
+            var course = _unitOfWork.Courses.Get(entity.CourseId);
+
+            var teacher = _unitOfWork.Teachers.GetAll().Where(p => p.UserId == entity.TeacherUserId).SingleOrDefault();
+
+            var student = _unitOfWork.Students.Get(entity.StudentId);
+
+            Notification notification = Validate(entity, course, teacher, student);
 
             if (notification.HasErrors())
             {
                 throw new ArgumentException(notification.ErrorMessage());
             }
+
+            oldEntity.Course = course;
+            oldEntity.Teacher = teacher;
+            oldEntity.Student = student;
 
             oldEntity.FinalScore = CalculateFinalScore(entity);
 

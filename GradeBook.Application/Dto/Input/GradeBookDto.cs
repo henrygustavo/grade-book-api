@@ -4,9 +4,11 @@
     {
         public int Id { get; set; }
 
-        public int CourseId { get; }
-        public int TeacherId { get; }
-        public int StudentId { get; }
+        public int CourseId { get; set; }
+        public int StudentId { get; set; }
+
+        public int TeacherUserId { get; set; }
+
         public virtual float AverageWorkScore { get; set; }
 
         public virtual float PartialWorkScore { get; set; }

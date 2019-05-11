@@ -21,8 +21,8 @@
 
 
         [HttpGet]
-        [Authorize]
         [ProducesResponseType(typeof(Application.Dto.Output.PaginationDto), 200)]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public IActionResult GetAll(int page = 1, int pageSize = 10, string sortBy = "id", string sortDirection = "asc")
         {
             int userId =int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -43,6 +43,9 @@
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult Post([FromBody]GradeBookDto gradeBook)
         {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            gradeBook.TeacherUserId = userId;
             _gradeBookApplicationService.Add(gradeBook);
             return Ok("GradeBook was added sucessfully");
         }
@@ -52,6 +55,10 @@
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Policy = "Teacher")]
         public IActionResult Put(int id, [FromBody]GradeBookDto gradeBook)
         {
+            int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            gradeBook.TeacherUserId = userId;
+
             _gradeBookApplicationService.Update(id, gradeBook);
             return Ok("GradeBook was updated sucessfully");
         }

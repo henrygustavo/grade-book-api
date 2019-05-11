@@ -13,6 +13,10 @@
         {
 
         }
+        public GradeBook GetComplete(int id)
+        {
+            return Context.Set<GradeBook>().Include(p => p.Course).Include(p => p.Teacher).Include(p => p.Student).SingleOrDefault(p=>p.Id == id);
+        }
 
         public IEnumerable<GradeBook> GetAllByRole(int pageNumber, int pageSize, string sortBy, string sortDirection, string roleName, int userId)
         {
@@ -20,13 +24,13 @@
 
             var skip = (pageNumber - 1) * pageSize;
 
-            var gradebook = Context.Set<GradeBook>().Include(p => p.Teacher).Include(p => p.Student);
+            var gradebook = Context.Set<GradeBook>().Include(p => p.Course).Include(p => p.Teacher).Include(p => p.Student);
 
             gradeBookDcitionary.Add(Roles.Admin, () => gradebook.OrderBy(sortBy, sortDirection).Skip(skip).Take(pageSize));
 
-            gradeBookDcitionary.Add(Roles.Teacher, () => gradebook.Where(p => p.Teacher.Id == userId).OrderBy(sortBy, sortDirection).Skip(skip).Take(pageSize));
+            gradeBookDcitionary.Add(Roles.Teacher, () => gradebook.Where(p => p.Teacher.UserId == userId).OrderBy(sortBy, sortDirection).Skip(skip).Take(pageSize));
 
-            gradeBookDcitionary.Add(Roles.Student, () => gradebook.Where(p => p.Student.Id == userId).OrderBy(sortBy, sortDirection).Skip(skip).Take(pageSize));
+            gradeBookDcitionary.Add(Roles.Student, () => gradebook.Where(p => p.Student.UserId == userId).OrderBy(sortBy, sortDirection).Skip(skip).Take(pageSize));
 
             return gradeBookDcitionary[roleName]();
 
@@ -39,8 +43,8 @@
             var gradebook = Context.Set<GradeBook>().Include(p => p.Teacher).Include(p => p.Student);
 
             gradeBookDcitionary.Add(Roles.Admin, gradebook.Count());
-            gradeBookDcitionary.Add(Roles.Teacher, gradebook.Where(p => p.Teacher.Id == userId).Count());
-            gradeBookDcitionary.Add(Roles.Student, gradebook.Where(p => p.Student.Id == userId).Count());
+            gradeBookDcitionary.Add(Roles.Teacher, gradebook.Where(p => p.Teacher.UserId == userId).Count());
+            gradeBookDcitionary.Add(Roles.Student, gradebook.Where(p => p.Student.UserId == userId).Count());
             return gradeBookDcitionary[roleName];
         }
     }
