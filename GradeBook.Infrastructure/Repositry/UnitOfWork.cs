@@ -15,6 +15,7 @@
             GradeBooks = new GradeBookRepository(_context);
             Students = new StudentRepository(_context);
             Teachers = new TeacherRepository(_context);
+            Administrators = new AdministratorRepository(_context);
 
         }
 
@@ -24,6 +25,7 @@
         public IGradeBookRepository GradeBooks { get; }
         public IStudentRepository Students { get; }
         public  ITeacherRepository Teachers { get; }
+        public IAdministratorRepository Administrators { get; }
 
         public int Complete()
         {

@@ -10,6 +10,7 @@
         IGradeBookRepository GradeBooks { get; }
         IStudentRepository Students { get; }
         ITeacherRepository Teachers { get; }
+        IAdministratorRepository Administrators { get; }
 
         int Complete();
     }

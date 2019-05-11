@@ -49,6 +49,9 @@
             modelBuilder.Entity<Student>()
              .ToTable("student");
 
+            modelBuilder.Entity<Administrator>()
+            .ToTable("administrator");
+
             modelBuilder.Entity<Teacher>()
              .ToTable("teacher");
 

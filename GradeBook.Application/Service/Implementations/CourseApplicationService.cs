@@ -47,8 +47,7 @@
                 return notification;
             }
 
-            if(_unitOfWork.Courses.GetAll().Any(p=>p.Id!=entity.Id 
-            && p.Code == entity.Code))
+            if(_unitOfWork.Courses.GetAll().Any(p=>p.Id!=entity.Id && p.Code == entity.Code))
             {
                 notification.AddError($"Code {entity.Code} already exists");
                 return notification;

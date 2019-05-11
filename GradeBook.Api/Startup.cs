@@ -37,6 +37,7 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Server=.;Initial Catalog=gradebookdb;Persist Security Info=False;User ID=XXXX;Password=XXXX;Connection Timeout=30;
             var connectionString = Environment.GetEnvironmentVariable("GRADEBOOK_CONECTION_STRING") ?? Configuration.GetConnectionString("SqlConnection");
 
             services.AddDbContext<GradeBookContext>(options => options.UseSqlServer(connectionString));

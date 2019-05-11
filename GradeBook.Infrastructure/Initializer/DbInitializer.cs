@@ -61,6 +61,12 @@
                     PhoneNumber = "530-685-2496"
                 };
 
+                var administrator = new Administrator
+                {
+                    User = user,
+                    FullName = "Admin Admin"
+                };
+
                 var userResult = await _userInMgr.CreateAsync(user, "P@$$w0rd");
                 var roleResult = await _userInMgr.AddToRoleAsync(user, roleName);
                 var claimResult = await _userInMgr.AddClaimAsync(user, new Claim(ClaimTypes.Role, roleName));
@@ -69,6 +75,8 @@
                 {
                     throw new InvalidOperationException("Failed to build user and roles");
                 }
+
+                _unitOfWork.Administrators.Add(administrator);
 
             }
         }
@@ -101,7 +109,7 @@
                 var teacher = new Teacher
                 {
                     User = user,
-                    Name = "Manuel Caldas"
+                    FullName = "Manuel Caldas"
                 };
 
                 var userResult = await _userInMgr.CreateAsync(user, "P@$$w0rd");
@@ -146,7 +154,7 @@
                 var student = new Student
                 {
                     User = user,
-                    Name = "Henry Fuentes"
+                    FullName = "Henry Fuentes"
                 };
 
                 var userResult = await _userInMgr.CreateAsync(user, "P@$$w0rd");

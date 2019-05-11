@@ -54,6 +54,17 @@
                 Email = model.Email
             };
 
+            Role role = await CreateNewUser(model, notification, user);
+
+            InsertUserByRole(model.FullName, user, role.Name);
+
+            _unitOfWork.Complete();
+
+            return "user was created successfully";
+        }
+
+        private async Task<Role> CreateNewUser(Dto.Input.UserDto model, Notification notification, User user)
+        {
             var userResult = await _userInMgr.CreateAsync(user, model.Password);
 
             if (!userResult.Succeeded)
@@ -83,7 +94,65 @@
                 throw new ArgumentException(notification.ErrorMessage());
             }
 
-            return "user was created successfully";
+            return role;
+        }
+
+        private void InsertUserByRole(string fullName, User user, string roleName)
+        {
+            Dictionary<string, Action> dictionryInsert = new Dictionary<string, Action>
+            {
+                {
+                    Roles.Admin,
+                    () => _unitOfWork.Administrators.Add(new Administrator
+                    {
+                        User = user,
+                        FullName = fullName
+                    })
+                },
+
+                {
+                    Roles.Student,
+                    () => _unitOfWork.Students.Add(new Student
+                    {
+                        User = user,
+                        FullName = fullName
+                    })
+                },
+
+                {
+                    Roles.Teacher,
+                    () => _unitOfWork.Teachers.Add(new Teacher
+                    {
+                        User = user,
+                        FullName = fullName
+                    })
+                }
+            };
+
+            dictionryInsert[roleName]();
+        }
+
+        private string GetUserFullNameByRole(int userId, string roleName)
+        {
+            var dictionryGet = new Dictionary<string, Func<string>>
+            {
+                {
+                    Roles.Admin,
+                   () =>  _unitOfWork.Administrators.GetAll().FirstOrDefault(p=>p.UserId == userId).FullName 
+                },
+
+                {
+                    Roles.Student,
+                  () => _unitOfWork.Students.GetAll().FirstOrDefault(p=>p.UserId == userId).FullName
+                },
+
+                {
+                    Roles.Teacher,
+                   () => _unitOfWork.Teachers.GetAll().FirstOrDefault(p=>p.UserId == userId).FullName
+                }
+            };
+
+          return dictionryGet[roleName]();
         }
 
         private Notification ValidateRegistration(Dto.Input.UserDto model)
@@ -93,6 +162,7 @@
             if (model == null || string.IsNullOrEmpty(model.Email)
                                   || string.IsNullOrEmpty(model.UserName)
                                   || string.IsNullOrEmpty(model.Password)
+                                  || string.IsNullOrEmpty(model.FullName)
                                   )
 
             {
@@ -157,6 +227,7 @@
 
             entityDto.RoleId = entity.UserRoles.FirstOrDefault().RoleId;
             entityDto.RoleName = roles.FirstOrDefault(p => p.Id == entityDto.RoleId).Name;
+            entityDto.FullName = GetUserFullNameByRole(id, entityDto.RoleName);
 
             return entityDto;
         }
@@ -178,6 +249,7 @@
             {
                 entityDto.RoleId = entities.FirstOrDefault(p=>p.Id == entityDto.Id).UserRoles.FirstOrDefault().RoleId;
                 entityDto.RoleName = roles.FirstOrDefault(p => p.Id == entityDto.RoleId).Name;
+                entityDto.FullName = GetUserFullNameByRole(entityDto.Id, entityDto.RoleName);
             }
 
             var pagedRecord = new Dto.Output.PaginationDto
@@ -212,7 +284,7 @@
                 throw new ArgumentException(notification.ErrorMessage());
             }
 
-            var oldEntity = _unitOfWork.Users.Get(id);
+            var oldEntity = _unitOfWork.Users.GetWithRoles(id);
             oldEntity.UserName = entity.UserName;
             oldEntity.NormalizedUserName = entity.UserName.ToUpper();
             oldEntity.Email = entity.Email;
@@ -220,9 +292,55 @@
             oldEntity.Disabled = entity.Disabled;
 
             _unitOfWork.Users.Update(oldEntity);
+
+           int  roleId = oldEntity.UserRoles.FirstOrDefault().RoleId;
+
+            var roles = _unitOfWork.Roles.GetAll();
+
+           var roleName = roles.FirstOrDefault(p => p.Id == roleId).Name;
+
+            UpdateUserByRole(entity.FullName, roleName, id);
+
             _unitOfWork.Complete();
 
             return oldEntity?.Id ?? 0;
+        }
+
+        private void UpdateUserByRole(string fullName, string roleName, int userId)
+        {
+            Dictionary<string, Action> dictionryUpdate = new Dictionary<string, Action>
+            {
+                {
+                    Roles.Admin,
+                    () => {
+
+                             var administrator =   _unitOfWork.Administrators.GetAll().SingleOrDefault(p=>p.UserId == userId);
+                             administrator.FullName = fullName;
+                             _unitOfWork.Administrators.Update(administrator);
+                          }
+                 },
+                {
+                    Roles.Student,
+                    () => {
+
+                             var student =   _unitOfWork.Students.GetAll().SingleOrDefault(p=>p.UserId == userId);
+                             student.FullName = fullName;
+                             _unitOfWork.Students.Update(student);
+                          }
+                },
+
+                {
+                    Roles.Teacher,
+                    () => {
+
+                             var teacher =   _unitOfWork.Teachers.GetAll().SingleOrDefault(p=>p.UserId == userId);
+                             teacher.FullName = fullName;
+                             _unitOfWork.Teachers.Update(teacher);
+                          }
+                }
+            };
+
+            dictionryUpdate[roleName]();
         }
     }
 }

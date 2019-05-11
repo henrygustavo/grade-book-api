@@ -1,7 +1,7 @@
 ﻿namespace GradeBook.Domain.Entity
 {
-  public  class Teacher : BaseUser
+    public class Administrator: BaseUser
     {
-       
+     
     }
 }

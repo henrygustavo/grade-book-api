@@ -44,6 +44,7 @@
         public void Add(TEntity entity)
         {
             Context.Set<TEntity>().Add(entity);
+
         }
 
         public void Update(TEntity entity)
