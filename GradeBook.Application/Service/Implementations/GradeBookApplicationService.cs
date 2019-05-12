@@ -78,7 +78,7 @@
             }
 
             if (entity.Id == 0 &&
-                _unitOfWork.GradeBooks.GetAll().Any(p=>p.Course.Id == entity.CourseId && p.Student.Id  == entity.StudentId))
+                _unitOfWork.GradeBooks.GetAllComplete().Any(p=>p.Course.Id == entity.CourseId && p.Student.Id  == entity.StudentId))
             {
                 notification.AddError($"The Student already has a Score on this course");
                 return notification;

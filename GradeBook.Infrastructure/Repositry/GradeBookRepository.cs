@@ -18,6 +18,11 @@
             return Context.Set<GradeBook>().Include(p => p.Course).Include(p => p.Teacher).Include(p => p.Student).SingleOrDefault(p=>p.Id == id);
         }
 
+        public IEnumerable<GradeBook> GetAllComplete()
+        {
+            return Context.Set<GradeBook>().Include(p => p.Course).Include(p => p.Teacher).Include(p => p.Student);
+        }
+
         public IEnumerable<GradeBook> GetAllByRole(int pageNumber, int pageSize, string sortBy, string sortDirection, string roleName, int userId)
         {
             var gradeBookDcitionary = new Dictionary<string, Func<IQueryable<GradeBook>>>();

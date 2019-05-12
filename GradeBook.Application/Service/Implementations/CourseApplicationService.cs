@@ -60,6 +60,12 @@
                 return notification;
             }
 
+            if (_unitOfWork.GradeBooks.GetAllComplete().Any(p => p.Course.Id == entity.Id))
+            {
+                notification.AddError($"A student has already a Score on this course");
+                return notification;
+            }
+
             if (string.IsNullOrEmpty(entity.Name))
             {
                 notification.AddError("Name should have a value");
