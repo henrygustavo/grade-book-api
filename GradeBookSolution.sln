@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.28803.156
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A3349742-EFBB-4210-B9DC-46C4B24CDD14}"
 	ProjectSection(SolutionItems) = preProject
+		.dockerignore = .dockerignore
 		azure-pipelines.yml = azure-pipelines.yml
+		docker-compose.yml = docker-compose.yml
 		Dockerfile = Dockerfile
 	EndProjectSection
 EndProject
